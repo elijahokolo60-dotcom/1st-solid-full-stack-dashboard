@@ -1,0 +1,29 @@
+bank-dashboard/
+├── bank_api.py      # Python backend
+├── index.html       # Bank dashboard frontend
+└── style.css        # CSS styles
+
+How to Run
+Install dependencies:
+
+bash
+pip install flask flask-cors
+Save the files:
+
+Python code as bank_api.py
+
+HTML code as index.html
+
+CSS code as style.css
+
+All in the same directory
+
+Run the server:
+
+bash
+python bank_api.py
+Open browser:
+
+Navigate to http://localhost:5000
+
+You'll see the bank dashboard

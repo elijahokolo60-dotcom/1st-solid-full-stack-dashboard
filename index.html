@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Record Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-university"></i> SecureBank Dashboard</h1>
+                <p class="subtitle">Your Financial Overview</p>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name">John Doe</span>
+                        <span class="user-role">Premium Client</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="btn-icon" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- API Status Bar -->
+        <div class="api-status-bar">
+            <div class="status-indicator">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Connecting to Bank API...</span>
+            </div>
+            <div class="current-time">
+                <i class="fas fa-clock"></i>
+                <span id="currentTime">--:--:--</span>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard-grid">
+            <!-- Total Balance Card -->
+            <div class="card balance-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-wallet"></i> Total Balance</h2>
+                    <span class="card-badge">Live</span>
+                </div>
+                <div class="balance-amount" id="totalBalance">$ --.--</div>
+                <div class="balance-details">
+                    <div class="balance-item">
+                        <span class="label">Checking</span>
+                        <span class="amount" id="checkingBalance">$ --.--</span>
+                    </div>
+                    <div class="balance-item">
+                        <span class="label">Savings</span>
+                        <span class="amount" id="savingsBalance">$ --.--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounts Summary -->
+            <div class="card accounts-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-credit-card"></i> My Accounts</h2>
+                    <button onclick="loadAccounts()" class="btn-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="accounts-list" id="accountsList">
+                    <!-- Accounts will be loaded here -->
+                    <div class="loading">Loading accounts...</div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="card transactions-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-exchange-alt"></i> Recent Transactions</h2>
+                    <button onclick="showNewTransactionForm()" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus"></i> New
+                    </button>
+                </div>
+                <div class="transactions-list" id="transactionsList">
+                    <!-- Transactions will be loaded here -->
+                    <div class="loading">Loading transactions...</div>
+                </div>
+            </div>
+
+            <!-- Transfer Funds -->
+            <div class="card transfer-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-money-bill-transfer"></i> Transfer Funds</h2>
+                </div>
+                <form id="transferForm" class="transfer-form">
+                    <div class="form-group">
+                        <label for="fromAccount">From Account</label>
+                        <select id="fromAccount" required>
+                            <option value="">Select account...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="toAccount">To Account</label>
+                        <select id="toAccount" required>
+                            <option value="">Select account...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transferAmount">Amount ($)</label>
+                        <input type="number" id="transferAmount" min="0.01" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transferDescription">Description</label>
+                        <input type="text" id="transferDescription" placeholder="Enter transfer description" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-paper-plane"></i> Transfer Now
+                    </button>
+                </form>
+            </div>
+
+            <!-- Cards Summary -->
+            <div class="card cards-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-credit-card"></i> My Cards</h2>
+                </div>
+                <div class="cards-list" id="cardsList">
+                    <!-- Cards will be loaded here -->
+                    <div class="loading">Loading cards...</div>
+                </div>
+            </div>
+
+            <!-- Spending by Category -->
+            <div class="card spending-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-pie"></i> Spending by Category</h2>
+                </div>
+                <div class="spending-chart" id="spendingChart">
+                    <!-- Chart will be generated here -->
+                    <div class="loading">Loading spending data...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Transaction Modal -->
+        <div id="transactionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-plus-circle"></i> New Transaction</h3>
+                    <button onclick="closeTransactionModal()" class="btn-icon">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="transactionForm" class="modal-form">
+                    <div class="form-group">
+                        <label for="transactionAccount">Account</label>
+                        <select id="transactionAccount" required>
+                            <option value="">Select account...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionType">Type</label>
+                        <select id="transactionType" required>
+                            <option value="">Select type...</option>
+                            <option value="debit">Debit (Withdrawal)</option>
+                            <option value="credit">Credit (Deposit)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionAmount">Amount ($)</label>
+                        <input type="number" id="transactionAmount" min="0.01" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionCategory">Category</label>
+                        <select id="transactionCategory" required>
+                            <option value="">Select category...</option>
+                            <option value="Food">Food & Dining</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Income">Income</option>
+                            <option value="Transfer">Transfer</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="transactionDescription">Description</label>
+                        <input type="text" id="transactionDescription" placeholder="Enter transaction description" required>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" onclick="closeTransactionModal()" class="btn btn-secondary">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Add Transaction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Response Console -->
+        <div class="card console-card">
+            <div class="card-header">
+                <h2><i class="fas fa-terminal"></i> API Activity Log</h2>
+                <button onclick="clearConsole()" class="btn-icon">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <pre id="responseConsole">// API responses will appear here</pre>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000/api';
+
+        // Initialize dashboard on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            checkAPIStatus();
+            loadDashboardData();
+        });
+
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('currentTime').textContent = `${dateString} ${timeString}`;
+        }
+
+        // Check API connection
+        async function checkAPIStatus() {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDot.className = 'status-dot connected';
+                    statusText.textContent = `API Connected - ${data.service} (${data.status})`;
+                    statusText.style.color = '#10b981';
+                } else {
+                    throw new Error('API error');
+                }
+            } catch (error) {
+                statusDot.className = 'status-dot disconnected';
+                statusText.textContent = 'API Disconnected - Start Python server with: python bank_api.py';
+                statusText.style.color = '#ef4444';
+                console.error('API connection error:', error);
+            }
+        }
+
+        // Load all dashboard data
+        async function loadDashboardData() {
+            await Promise.all([
+                loadAccounts(),
+                loadTransactions(),
+                loadCards(),
+                loadSummary()
+            ]);
+        }
+
+        // Load accounts
+        async function loadAccounts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/accounts`);
+                const data = await response.json();
+                
+                logResponse('GET /api/accounts', data);
+                
+                // Update total balance
+                if (data.total_balance) {
+                    document.getElementById('totalBalance').textContent = 
+                        `$${data.total_balance.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                    
+                    // Calculate checking and savings
+                    let checkingTotal = 0;
+                    let savingsTotal = 0;
+                    
+                    data.accounts.forEach(account => {
+                        if (account.account_type === 'Checking') {
+                            checkingTotal += account.balance;
+                        } else if (account.account_type === 'Savings') {
+                            savingsTotal += account.balance;
+                        }
+                    });
+                    
+                    document.getElementById('checkingBalance').textContent = 
+                        `$${checkingTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                    document.getElementById('savingsBalance').textContent = 
+                        `$${savingsTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                }
+                
+                // Update accounts list
+                const accountsList = document.getElementById('accountsList');
+                if (data.accounts && data.accounts.length > 0) {
+                    accountsList.innerHTML = data.accounts.map(account => `
+                        <div class="account-item ${account.status.toLowerCase()}">
+                            <div class="account-icon">
+                                <i class="fas fa-${account.account_type === 'Savings' ? 'piggy-bank' : 'money-check-alt'}"></i>
+                            </div>
+                            <div class="account-details">
+                                <div class="account-name">${account.account_name}</div>
+                                <div class="account-number">${account.account_id} • ${account.account_type}</div>
+                            </div>
+                            <div class="account-balance">
+                                <div class="balance">$${account.balance.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                                <div class="currency">${account.currency}</div>
+                            </div>
+                            <button onclick="viewAccountDetails('${account.account_id}')" class="btn-icon">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                    
+                    // Populate transfer form dropdowns
+                    populateAccountDropdowns(data.accounts);
+                } else {
+                    accountsList.innerHTML = '<div class="no-data">No accounts found</div>';
+                }
+                
+            } catch (error) {
+                logResponse('GET /api/accounts', { error: error.message }, true);
+                showNotification('Error loading accounts', 'error');
+            }
+        }
+
+        // Load transactions
+        async function loadTransactions() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/transactions`);
+                const data = await response.json();
+                
+                logResponse('GET /api/transactions', data);
+                
+                const transactionsList = document.getElementById('transactionsList');
+                if (data.transactions && data.transactions.length > 0) {
+                    // Show last 5 transactions
+                    const recentTransactions = data.transactions.slice(0, 5);
+                    
+                    transactionsList.innerHTML = recentTransactions.map(transaction => `
+                        <div class="transaction-item ${transaction.type}">
+                            <div class="transaction-icon">
+                                <i class="fas fa-${getTransactionIcon(transaction.category)}"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-description">${transaction.description}</div>
+                                <div class="transaction-meta">
+                                    <span class="category ${transaction.category.toLowerCase()}">${transaction.category}</span>
+                                    <span class="date">${transaction.date}</span>
+                                    <span class="account">${transaction.account_id}</span>
+                                </div>
+                            </div>
+                            <div class="transaction-amount ${transaction.type}">
+                                ${transaction.type === 'debit' ? '-' : '+'}$${transaction.amount.toFixed(2)}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    transactionsList.innerHTML = '<div class="no-data">No transactions found</div>';
+                }
+                
+            } catch (error) {
+                logResponse('GET /api/transactions', { error: error.message }, true);
+                showNotification('Error loading transactions', 'error');
+            }
+        }
+
+        // Load cards
+        async function loadCards() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/cards`);
+                const data = await response.json();
+                
+                logResponse('GET /api/cards', data);
+                
+                const cardsList = document.getElementById('cardsList');
+                if (data.cards && data.cards.length > 0) {
+                    cardsList.innerHTML = data.cards.map(card => `
+                        <div class="card-item ${card.status.toLowerCase()}">
+                            <div class="card-header">
+                                <div class="card-type">${card.card_type}</div>
+                                <span class="card-status">${card.status}</span>
+                            </div>
+                            <div class="card-number">${card.card_number}</div>
+                            <div class="card-details">
+                                <div class="card-expiry">Expires: ${card.expiry}</div>
+                                <div class="card-spent">Spent this month: $${card.spent_this_month.toFixed(2)}</div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-icon" title="Lock Card">
+                                    <i class="fas fa-lock"></i>
+                                </button>
+                                <button class="btn-icon" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    cardsList.innerHTML = '<div class="no-data">No cards found</div>';
+                }
+                
+            } catch (error) {
+                logResponse('GET /api/cards', { error: error.message }, true);
+                showNotification('Error loading cards', 'error');
+            }
+        }
+
+        // Load financial summary
+        async function loadSummary() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/summary`);
+                const data = await response.json();
+                
+                logResponse('GET /api/summary', data);
+                
+                // Update spending chart
+                const spendingChart = document.getElementById('spendingChart');
+                if (data.spending_by_category && data.spending_by_category.length > 0) {
+                    spendingChart.innerHTML = data.spending_by_category.map(item => `
+                        <div class="spending-item">
+                            <div class="spending-category">
+                                <span class="category-name">${item.category}</span>
+                                <span class="category-amount">$${item.amount.toFixed(2)}</span>
+                            </div>
+                            <div class="spending-bar">
+                                <div class="bar-fill" style="width: ${Math.min(item.amount / 100, 100)}%"></div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    spendingChart.innerHTML = '<div class="no-data">No spending data available</div>';
+                }
+                
+            } catch (error) {
+                logResponse('GET /api/summary', { error: error.message }, true);
+            }
+        }
+
+        // Transfer funds
+        document.getElementById('transferForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fromAccount = document.getElementById('fromAccount').value;
+            const toAccount = document.getElementById('toAccount').value;
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            const description = document.getElementById('transferDescription').value;
+            
+            if (fromAccount === toAccount) {
+                showNotification('Cannot transfer to the same account', 'error');
+                return;
+            }
+            
+            if (amount <= 0) {
+                showNotification('Amount must be greater than 0', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/transfer`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        from_account: fromAccount,
+                        to_account: toAccount,
+                        amount: amount,
+                        description: description
+                    })
+                });
+                
+                const data = await response.json();
+                logResponse('POST /api/transfer', data);
+                
+                if (response.ok) {
+                    // Clear form
+                    document.getElementById('transferForm').reset();
+                    
+                    // Reload data
+                    loadDashboardData();
+                    
+                    showNotification('Transfer completed successfully!', 'success');
+                } else {
+                    showNotification(data.error || 'Transfer failed', 'error');
+                }
+                
+            } catch (error) {
+                logResponse('POST /api/transfer', { error: error.message }, true);
+                showNotification('Network error. Check API connection.', 'error');
+            }
+        });
+
+        // Add new transaction
+        document.getElementById('transactionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const account = document.getElementById('transactionAccount').value;
+            const type = document.getElementById('transactionType').value;
+            const amount = parseFloat(document.getElementById('transactionAmount').value);
+            const category = document.getElementById('transactionCategory').value;
+            const description = document.getElementById('transactionDescription').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/transactions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        account_id: account,
+                        type: type,
+                        amount: amount,
+                        category: category,
+                        description: description
+                    })
+                });
+                
+                const data = await response.json();
+                logResponse('POST /api/transactions', data);
+                
+                if (response.ok) {
+                    closeTransactionModal();
+                    loadDashboardData();
+                    showNotification('Transaction added successfully!', 'success');
+                } else {
+                    showNotification(data.error || 'Failed to add transaction', 'error');
+                }
+                
+            } catch (error) {
+                logResponse('POST /api/transactions', { error: error.message }, true);
+                showNotification('Network error. Check API connection.', 'error');
+            }
+        });
+
+        // Helper functions
+        function populateAccountDropdowns(accounts) {
+            const fromAccountSelect = document.getElementById('fromAccount');
+            const toAccountSelect = document.getElementById('toAccount');
+            const transactionAccountSelect = document.getElementById('transactionAccount');
+            
+            // Clear existing options except first
+            [fromAccountSelect, toAccountSelect, transactionAccountSelect].forEach(select => {
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+            });
+            
+            // Add account options
+            accounts.forEach(account => {
+                const optionText = `${account.account_id} - ${account.account_name} (${account.account_type})`;
+                const optionValue = account.account_id;
+                
+                [fromAccountSelect, toAccountSelect, transactionAccountSelect].forEach(select => {
+                    const option = new Option(optionText, optionValue);
+                    select.add(option);
+                });
+            });
+        }
+
+        function getTransactionIcon(category) {
+            const icons = {
+                'Food': 'utensils',
+                'Shopping': 'shopping-bag',
+                'Housing': 'home',
+                'Transportation': 'car',
+                'Entertainment': 'film',
+                'Healthcare': 'heartbeat',
+                'Income': 'money-bill-wave',
+                'Transfer': 'exchange-alt',
+                'Other': 'receipt'
+            };
+            return icons[category] || 'receipt';
+        }
+
+        function showNewTransactionForm() {
+            document.getElementById('transactionModal').style.display = 'block';
+        }
+
+        function closeTransactionModal() {
+            document.getElementById('transactionModal').style.display = 'none';
+            document.getElementById('transactionForm').reset();
+        }
+
+        function viewAccountDetails(accountId) {
+            fetch(`${API_BASE_URL}/accounts/${accountId}`)
+                .then(response => response.json())
+                .then(data => {
+                    logResponse(`GET /api/accounts/${accountId}`, data);
+                    alert(`Account Details:\n\nID: ${data.account.account_id}\nName: ${data.account.account_name}\nType: ${data.account.account_type}\nBalance: $${data.account.balance.toFixed(2)}\nStatus: ${data.account.status}`);
+                })
+                .catch(error => {
+                    logResponse(`GET /api/accounts/${accountId}`, { error: error.message }, true);
+                });
+        }
+
+        function logResponse(endpoint, data, isError = false) {
+            const consoleElement = document.getElementById('responseConsole');
+            const timestamp = new Date().toLocaleTimeString();
+            const status = isError ? '❌ ERROR' : '✅ SUCCESS';
+            
+            const logEntry = `
+${status} [${timestamp}] ${endpoint}
+${JSON.stringify(data, null, 2)}
+──────────────────────────────────────────────`;
+            
+            consoleElement.textContent = logEntry + '\n' + consoleElement.textContent;
+        }
+
+        function clearConsole() {
+            document.getElementById('responseConsole').textContent = '// API responses will appear here';
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('transactionModal');
+            if (event.target === modal) {
+                closeTransactionModal();
+            }
+        };
+    </script>
+</body>
+</html>

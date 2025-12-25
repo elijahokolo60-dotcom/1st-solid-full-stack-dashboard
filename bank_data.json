@@ -1,0 +1,120 @@
+{
+  "accounts": [
+    {
+      "account_id": "ACC001",
+      "account_name": "John Doe",
+      "account_type": "Checking",
+      "balance": 12500.76,
+      "currency": "USD",
+      "status": "Active"
+    },
+    {
+      "account_id": "ACC002",
+      "account_name": "John Doe",
+      "account_type": "Savings",
+      "balance": 45000.49,
+      "currency": "USD",
+      "status": "Active"
+    },
+    {
+      "account_id": "ACC003",
+      "account_name": "Jane Smith",
+      "account_type": "Checking",
+      "balance": 8500.25,
+      "currency": "USD",
+      "status": "Active"
+    }
+  ],
+  "transactions": [
+    {
+      "transaction_id": "TXN001",
+      "account_id": "ACC001",
+      "type": "debit",
+      "amount": 250.0,
+      "description": "Grocery Store",
+      "date": "2024-01-15",
+      "category": "Food",
+      "status": "Completed"
+    },
+    {
+      "transaction_id": "TXN002",
+      "account_id": "ACC001",
+      "type": "credit",
+      "amount": 1500.0,
+      "description": "Salary Deposit",
+      "date": "2024-01-14",
+      "category": "Income",
+      "status": "Completed"
+    },
+    {
+      "transaction_id": "TXN003",
+      "account_id": "ACC002",
+      "type": "credit",
+      "amount": 500.0,
+      "description": "Transfer from Checking",
+      "date": "2024-01-13",
+      "category": "Transfer",
+      "status": "Completed"
+    },
+    {
+      "transaction_id": "TXN004",
+      "account_id": "ACC001",
+      "type": "debit",
+      "amount": 89.99,
+      "description": "Online Shopping",
+      "date": "2024-01-12",
+      "category": "Shopping",
+      "status": "Completed"
+    },
+    {
+      "transaction_id": "TXN005",
+      "account_id": "ACC003",
+      "type": "debit",
+      "amount": 1200.0,
+      "description": "Rent Payment",
+      "date": "2024-01-10",
+      "category": "Housing",
+      "status": "Completed"
+    },
+    {
+      "transaction_id": "TXN006",
+      "account_id": "ACC002",
+      "type": "debit",
+      "amount": 0.01,
+      "description": "Transfer to John Doe: test",
+      "date": "2025-12-19",
+      "category": "Transfer",
+      "status": "Completed"
+    },
+    {
+      "transaction_id": "TXN007",
+      "account_id": "ACC001",
+      "type": "credit",
+      "amount": 0.01,
+      "description": "Transfer from John Doe: test",
+      "date": "2025-12-19",
+      "category": "Transfer",
+      "status": "Completed"
+    }
+  ],
+  "cards": [
+    {
+      "card_id": "CARD001",
+      "card_number": "**** **** **** 1234",
+      "card_type": "Visa Debit",
+      "account_id": "ACC001",
+      "expiry": "12/2026",
+      "status": "Active",
+      "spent_this_month": 1250.75
+    },
+    {
+      "card_id": "CARD002",
+      "card_number": "**** **** **** 5678",
+      "card_type": "Mastercard Credit",
+      "account_id": "ACC002",
+      "expiry": "08/2025",
+      "status": "Active",
+      "spent_this_month": 500.0
+    }
+  ]
+}
