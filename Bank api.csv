@@ -1,0 +1,347 @@
+
+"from flask import Flask, jsonify, request, send_from_directory "
+from flask_cors import CORS 
+from datetime import datetime 
+import json 
+import os 
+app = Flask(__name__) 
+CORS(app) 
+DB_FILE = 'bank_data.json' 
+def init_database(): 
+if not os.path.exists(DB_FILE): 
+sample_data = {   } 
+save_database(sample_data) 
+def load_database(): 
+ if os.path.exists(DB_FILE): 
+" with open(DB_FILE, 'r') as f: "
+return json.load(f) 
+"   return {""accounts"": [], ""transactions"": [], ""cards"": []} "
+def save_database(data): 
+" with open(DB_FILE, 'w') as f: "
+" json.dump(data, f, indent=2) "
+@app.route('/') 
+def serve_frontend(): 
+"1. from flask import Flask, jsonify, request, send_from_directory"
+2. from flask_cors import CORS
+3. from datetime import datetime
+4. import json
+5. import os
+6. app = Flask(__name__)
+7. CORS(app)
+8. # Database file
+9. DB_FILE = 'bank_data.json'
+10. # Initialize sample data if not exists
+11. def init_database():
+12. if not os.path.exists(DB_FILE):
+13. sample_data = {
+"14. ""accounts"": ["
+15. {
+"16. ""account_id"": ""ACC001"","
+"17. ""account_name"": ""John Doe"","
+"18. ""account_type"": ""Checking"","
+"19. ""balance"": 12500.75,"
+"20. ""currency"": ""USD"","
+"21. ""status"": ""Active"""
+"22. },"
+23. {
+"24. ""account_id"": ""ACC002"","
+"25. ""account_name"": ""John Doe"","
+"26. ""account_type"": ""Savings"","
+"27. ""balance"": 45000.50,"
+"28. ""currency"": ""USD"","
+"29. ""status"": ""Active"""
+"30. },"
+31. {
+"32. ""account_id"": ""ACC003"","
+"33. ""account_name"": ""Jane Smith"","
+"34. ""account_type"": ""Checking"","
+"35. ""balance"": 8500.25,"
+"36. ""currency"": ""USD"","
+"37. ""status"": ""Active"""
+38. }
+"39. ],"
+"40. ""transactions"": ["
+41. {
+"42. ""transaction_id"": ""TXN001"","
+"43. ""account_id"": ""ACC001"","
+"44. ""type"": ""debit"","
+"45. ""amount"": 250.00,"
+"46. ""description"": ""Grocery Store"","
+"47. ""date"": ""2024-01-15"","
+"48. ""category"": ""Food"","
+"49. ""status"": ""Completed"""
+"50. },"
+51. {
+"52. ""transaction_id"": ""TXN002"","
+"53. ""account_id"": ""ACC001"","
+"54. ""type"": ""credit"","
+"55. ""amount"": 1500.00,"
+"56. ""description"": ""Salary Deposit"","
+"57. ""date"": ""2024-01-14"","
+"58. ""category"": ""Income"","
+"59. ""status"": ""Completed"""
+"60. },"
+61. {
+"62. ""transaction_id"": ""TXN003"","
+"63. ""account_id"": ""ACC002"","
+"64. ""type"": ""credit"","
+"65. ""amount"": 500.00,"
+"66. ""description"": ""Transfer from Checking"","
+"67. ""date"": ""2024-01-13"","
+"68. ""category"": ""Transfer"","
+"69. ""status"": ""Completed"""
+"70. },"
+71. {
+"72. ""transaction_id"": ""TXN004"","
+"73. ""account_id"": ""ACC001"","
+"74. ""type"": ""debit"","
+"75. ""amount"": 89.99,"
+"76. ""description"": ""Online Shopping"","
+"77. ""date"": ""2024-01-12"","
+"78. ""category"": ""Shopping"","
+"79. ""status"": ""Completed"""
+"80. },"
+81. {
+"82. ""transaction_id"": ""TXN005"","
+"83. ""account_id"": ""ACC003"","
+"84. ""type"": ""debit"","
+"85. ""amount"": 1200.00,"
+"86. ""description"": ""Rent Payment"","
+"87. ""date"": ""2024-01-10"","
+"88. ""category"": ""Housing"","
+"89. ""status"": ""Completed"""
+90. }
+"91. ],"
+"92. ""cards"": ["
+93. {
+"94. ""card_id"": ""CARD001"","
+"95. ""card_number"": ""**** **** **** 1234"","
+"96. ""card_type"": ""Visa Debit"","
+"97. ""account_id"": ""ACC001"","
+"98. ""expiry"": ""12/2026"","
+"99. ""status"": ""Active"","
+"100. ""spent_this_month"": 1250.75"
+"101. },"
+102. {
+"103. ""card_id"": ""CARD002"","
+"104. ""card_number"": ""**** **** **** 5678"","
+"105. ""card_type"": ""Mastercard Credit"","
+"106. ""account_id"": ""ACC002"","
+"107. ""expiry"": ""08/2025"","
+"108. ""status"": ""Active"","
+"109. ""spent_this_month"": 500.00"
+110. }
+111. ]
+112. }
+113. save_database(sample_data)
+114. def load_database():
+115. if os.path.exists(DB_FILE):
+"116. with open(DB_FILE, 'r') as f:"
+117. return json.load(f)
+"118. return {""accounts"": [], ""transactions"": [], ""cards"": []}"
+119. def save_database(data):
+"120. with open(DB_FILE, 'w') as f:"
+"121. json.dump(data, f, indent=2)"
+122. @app.route('/')
+123. def serve_frontend():
+"124. return send_from_directory('.', 'index.html')"
+125. # Serve CSS file
+126. @app.route('/style.css')
+127. def serve_css():
+"128. return send_from_directory('.', 'style.css')"
+129. # API Health Check
+"130. @app.route('/api/health', methods=['GET'])"
+131. def health_check():
+132. return jsonify({
+"133. ""status"": ""healthy"","
+"134. ""timestamp"": datetime.now().isoformat(),"
+"135. ""service"": ""Bank API"""
+136. })
+137. # Get all accounts
+"138. @app.route('/api/accounts', methods=['GET'])"
+139. def get_accounts():
+140. data = load_database()
+141. total_balance = sum(acc['balance'] for acc in data['accounts'])
+142. return jsonify({
+"143. ""accounts"": data['accounts'],"
+"144. ""total_balance"": total_balance,"
+"145. ""count"": len(data['accounts'])"
+146. })
+147. # Get account by ID
+"148. @app.route('/api/accounts/<account_id>', methods=['GET'])"
+149. def get_account(account_id):
+150. data = load_database()
+"151. account = next((acc for acc in data['accounts'] if acc['account_id'] == account_id), None)"
+152. if account:
+153. # Get account transactions
+154. transactions = [t for t in data['transactions'] if t['account_id'] == account_id][-10:]
+155. return jsonify({
+"156. ""account"": account,"
+"157. ""recent_transactions"": transactions"
+158. })
+"159. return jsonify({""error"": ""Account not found""}), 404"
+160. # Get all transactions
+"161. @app.route('/api/transactions', methods=['GET'])"
+162. def get_transactions():
+163. data = load_database()
+164. # Optional filters
+165. account_id = request.args.get('account_id')
+166. category = request.args.get('category')
+167. start_date = request.args.get('start_date')
+168. end_date = request.args.get('end_date')
+169. filtered_transactions = data['transactions']
+170. if account_id:
+171. filtered_transactions = [t for t in filtered_transactions if t['account_id'] == account_id]
+172. if category:
+173. filtered_transactions = [t for t in filtered_transactions if t['category'] == category]
+174. if start_date:
+175. filtered_transactions = [t for t in filtered_transactions if t['date'] >= start_date]
+176. if end_date:
+177. filtered_transactions = [t for t in filtered_transactions if t['date'] <= end_date]
+178. # Sort by date (newest first)
+"179. filtered_transactions.sort(key=lambda x: x['date'], reverse=True)"
+180. # Calculate summary
+181. total_debits = sum(t['amount'] for t in filtered_transactions if t['type'] == 'debit')
+182. total_credits = sum(t['amount'] for t in filtered_transactions if t['type'] == 'credit')
+183. return jsonify({
+"184. ""transactions"": filtered_transactions,"
+"185. ""summary"": {"
+"186. ""total_transactions"": len(filtered_transactions),"
+"187. ""total_debits"": total_debits,"
+"188. ""total_credits"": total_credits,"
+"189. ""net_flow"": total_credits - total_debits"
+190. }
+191. })
+192. # Add new transaction
+"193. @app.route('/api/transactions', methods=['POST'])"
+194. def add_transaction():
+195. try:
+196. data = request.get_json()
+197. # Validate required fields
+"198. required_fields = ['account_id', 'type', 'amount', 'description', 'category']"
+199. for field in required_fields:
+200. if field not in data:
+"201. return jsonify({""error"": f""Missing required field: {field}""}), 400"
+202. # Load current database
+203. db_data = load_database()
+204. # Create new transaction
+205. new_transaction = {
+"206. ""transaction_id"": f""TXN{len(db_data['transactions']) + 1:03d}"","
+"207. ""account_id"": data['account_id'],"
+"208. ""type"": data['type'],"
+"209. ""amount"": float(data['amount']),"
+"210. ""description"": data['description'],"
+"211. ""date"": data.get('date', datetime.now().strftime('%Y-%m-%d')),"
+"212. ""category"": data['category'],"
+"213. ""status"": ""Pending"""
+214. }
+215. # Update account balance
+216. for account in db_data['accounts']:
+217. if account['account_id'] == data['account_id']:
+218. if data['type'] == 'credit':
+219. account['balance'] += float(data['amount'])
+220. else:
+221. account['balance'] -= float(data['amount'])
+222. break
+223. db_data['transactions'].append(new_transaction)
+224. save_database(db_data)
+225. return jsonify({
+"226. ""message"": ""Transaction added successfully"","
+"227. ""transaction"": new_transaction"
+"228. }), 201"
+229. except Exception as e:
+"230. return jsonify({""error"": str(e)}), 500"
+231. # Get cards
+"232. @app.route('/api/cards', methods=['GET'])"
+233. def get_cards():
+234. data = load_database()
+235. return jsonify({
+"236. ""cards"": data['cards'],"
+"237. ""count"": len(data['cards'])"
+238. })
+239. # Get financial summary
+"240. @app.route('/api/summary', methods=['GET'])"
+241. def get_summary():
+242. data = load_database()
+243. total_balance = sum(acc['balance'] for acc in data['accounts'])
+244. total_transactions = len(data['transactions'])
+245. # Recent transactions (last 30 days simulated)
+246. recent_transactions = data['transactions'][-5:]  # Last 5 transactions
+247. # Monthly spending by category
+248. categories = {}
+249. for transaction in data['transactions']:
+250. if transaction['type'] == 'debit':
+251. cat = transaction['category']
+"252. categories[cat] = categories.get(cat, 0) + transaction['amount']"
+253. return jsonify({
+"254. ""summary"": {"
+"255. ""total_balance"": total_balance,"
+"256. ""total_accounts"": len(data['accounts']),"
+"257. ""active_cards"": len(data['cards']),"
+"258. ""total_transactions"": total_transactions,"
+"259. ""recent_transactions"": recent_transactions"
+"260. },"
+"261. ""spending_by_category"": ["
+"262. {""category"": cat, ""amount"": amount}"
+"263. for cat, amount in categories.items()"
+264. ]
+265. })
+266. # Transfer between accounts
+"267. @app.route('/api/transfer', methods=['POST'])"
+268. def transfer_funds():
+269. try:
+270. data = request.get_json()
+"271. required_fields = ['from_account', 'to_account', 'amount', 'description']"
+272. for field in required_fields:
+273. if field not in data:
+"274. return jsonify({""error"": f""Missing required field: {field}""}), 400"
+275. amount = float(data['amount'])
+276. if amount <= 0:
+"277. return jsonify({""error"": ""Amount must be positive""}), 400"
+278. db_data = load_database()
+279. # Find accounts
+"280. from_acc = next((acc for acc in db_data['accounts'] if acc['account_id'] == data['from_account']), None)"
+"281. to_acc = next((acc for acc in db_data['accounts'] if acc['account_id'] == data['to_account']), None)"
+282. if not from_acc or not to_acc:
+"283. return jsonify({""error"": ""One or both accounts not found""}), 404"
+284. if from_acc['balance'] < amount:
+"285. return jsonify({""error"": ""Insufficient funds""}), 400"
+286. # Update balances
+287. from_acc['balance'] -= amount
+288. to_acc['balance'] += amount
+289. # Create transfer transactions
+290. today = datetime.now().strftime('%Y-%m-%d')
+291. debit_transaction = {
+"292. ""transaction_id"": f""TXN{len(db_data['transactions']) + 1:03d}"","
+"293. ""account_id"": data['from_account'],"
+"294. ""type"": ""debit"","
+"295. ""amount"": amount,"
+"296. ""description"": f""Transfer to {to_acc['account_name']}: {data['description']}"","
+"297. ""date"": today,"
+"298. ""category"": ""Transfer"","
+"299. ""status"": ""Completed"""
+300. }
+301. credit_transaction = {
+"302. ""transaction_id"": f""TXN{len(db_data['transactions']) + 2:03d}"","
+"303. ""account_id"": data['to_account'],"
+"304. ""type"": ""credit"","
+"305. ""amount"": amount,"
+"306. ""description"": f""Transfer from {from_acc['account_name']}: {data['description']}"","
+"307. ""date"": today,"
+"308. ""category"": ""Transfer"","
+"309. ""status"": ""Completed"""
+310. }
+"311. db_data['transactions'].extend([debit_transaction, credit_transaction])"
+312. save_database(db_data)
+313. return jsonify({
+"314. ""message"": ""Transfer completed successfully"","
+"315. ""new_balance"": from_acc['balance'],"
+"316. ""transactions"": [debit_transaction, credit_transaction]"
+317. })
+318. except Exception as e:
+"319. return jsonify({""error"": str(e)}), 500"
+320. if __name__ == '__main__':
+321. init_database()
+"322. print(""Bank API Server Starting..."")"
+"323. print(""Dashboard available at: http://localhost:5000"")"
+"324. app.run(debug=True, port=5000)"
