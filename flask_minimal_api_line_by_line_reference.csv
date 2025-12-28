@@ -1,0 +1,36 @@
+Line,Code,Pseudo Syntax,What It Does,Simple Analogy
+1,"from flask import Flask, jsonify, request, send_from_directory",IMPORT Flask components,Imports Flask framework utilities,Getting web server toolbox
+2,from flask_cors import CORS,IMPORT CORS module,Imports Cross-Origin Resource Sharing,Getting permission gatekeeper
+3,import json,IMPORT json module,Imports JSON data handling,Getting data format converter
+5,app = Flask(__name__),CREATE Flask application,Initializes Flask web server,Building the web server engine
+6,CORS(app),ENABLE CORS for app,Allows cross-origin requests,Opening server to browser connections
+8-11,Users list definition,CREATE sample users list,Defines in-memory user data storage,Setting up example user database
+9,"{""id"": 1, ""name"": ""John Doe"", ...}",DEFINE sample user 1,Creates first demo user record,Adding example user John
+10,"{""id"": 2, ""name"": ""Jane Smith"", ...}",DEFINE sample user 2,Creates second demo user record,Adding example user Jane
+14,@app.route('/'),DEFINE root route,Maps homepage URL to function,Setting main page endpoint
+15,def serve_frontend():,DEFINE serve_frontend function,Function to serve HTML page,Creating homepage delivery function
+16,"return send_from_directory('.', 'index.html')",SEND index.html FROM current dir,Serves frontend HTML file,Delivering the main web page
+19,"@app.route('/api/users', methods=['GET'])",DEFINE GET users endpoint,Creates route to retrieve all users,Setting up get all users service
+20,def get_users():,DEFINE get_users function,Function to return user list,Creating user list provider
+21,"return jsonify({'users': users, 'count': len(users)})",RETURN users as JSON,Returns user list with count,Sending user data with total
+24,"@app.route('/api/users/<int:user_id>', methods=['GET'])",DEFINE GET single user endpoint,Creates route for specific user,Setting up get user by ID service
+25,def get_user(user_id):,DEFINE get_user function,Function to find single user,Creating user finder
+26,"next((u for u in users if u['id'] == user_id), None)",FIND user by ID,Searches list for matching ID,Looking for specific user
+27-28,if user: return jsonify(user),RETURN user IF found,Returns user data if exists,Sending user info if found
+29,"return jsonify({'error': 'User not found'}), 404",RETURN error IF not found,Returns 404 error if no user,Sending not found message
+32,"@app.route('/api/users', methods=['POST'])",DEFINE POST users endpoint,Creates route to add new user,Setting up add user service
+33,def add_user():,DEFINE add_user function,Function to create new user,Creating user creator
+34,try:,BEGIN try block,Starts error handling,Beginning safe operation
+35,data = request.get_json(),GET JSON data FROM request,Parses incoming JSON data,Reading user information
+36,if not data or 'name' not in data or 'email' not in data:,TEST required fields,Checks name and email exist,Verifying necessary information
+38,"return jsonify({'error': 'Name and email are required'}), 400",RETURN validation error,Sends 400 if data incomplete,Sending missing info error
+41,'id': len(users) + 1,GENERATE new user ID,Creates sequential ID,Assigning next available number
+45,users.append(new_user),ADD user TO list,Appends new user to storage,Storing new user in database
+46,"return jsonify({'message': 'User created', 'user': new_user}), 201",RETURN success response,Confirms user creation,Sending user added confirmation
+51,"@app.route('/api/users/<int:user_id>', methods=['DELETE'])",DEFINE DELETE user endpoint,Creates route to remove user,Setting up delete user service
+52,def delete_user(user_id):,DEFINE delete_user function,Function to remove user,Creating user remover
+53,global users,DECLARE global users variable,Accesses module-level users list,Accessing the main user database
+54,users = [u for u in users if u['id'] != user_id],FILTER OUT deleted user,Creates new list without user,Removing user from database
+55,return jsonify({'message': f'User {user_id} deleted'}),RETURN success message,Confirms user deletion,Sending user deleted confirmation
+57,if __name__ == '__main__':,CHECK if main script,Tests if script is executed directly,Checking if running as main program
+58,"app.run(debug=True, port=5000)",START Flask server,Runs development server,Launching the web service

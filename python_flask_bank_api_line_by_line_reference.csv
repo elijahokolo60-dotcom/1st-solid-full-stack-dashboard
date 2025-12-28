@@ -1,0 +1,32 @@
+Section,Line,Code,Pseudo Syntax,What It Does,Simple Analogy
+Imports and Setup,1,"from flask import Flask, jsonify, request, send_from_directory",IMPORT Flask components,Imports Flask framework utilities,Getting web server tools
+Imports and Setup,2,from flask_cors import CORS,IMPORT CORS module,Imports Cross-Origin Resource Sharing,Getting permission gate for browsers
+Imports and Setup,3,from datetime import datetime,IMPORT datetime class,Imports date/time handling,Getting time management tool
+Imports and Setup,4,import json,IMPORT json module,Imports JSON data handling,Getting data format converter
+Imports and Setup,5,import os,IMPORT os module,Imports operating system utilities,Getting file system tools
+Imports and Setup,7,app = Flask(__name__),CREATE Flask application,Initializes Flask web server,Building the web server foundation
+Imports and Setup,8,CORS(app),ENABLE CORS for app,Allows cross-origin requests,Opening server to external connections
+Imports and Setup,10,DB_FILE = 'bank_data.json',DEFINE database filename,Sets JSON file for data storage,Naming the data storage file
+Database Functions,13,def init_database():,DEFINE init_database function,Creates initial sample data,Setting up sample bank records
+Database Functions,14,if not os.path.exists(DB_FILE):,CHECK if database file exists,Tests if data file already exists,Checking if storage file is empty
+Database Functions,15-84,sample_data = {...},CREATE sample data structure,Builds initial bank data,Creating sample accounts/transactions
+Database Functions,85,save_database(sample_data),CALL save_database,Saves initial data to file,Storing sample data in file
+Database Functions,87,def load_database():,DEFINE load_database function,Loads data from JSON file,Reading data from storage
+Database Functions,93,"return {'accounts': [], ...}",RETURN empty data,Returns empty structure if no file,Providing empty containers
+Database Functions,95,def save_database(data):,DEFINE save_database function,Saves data to JSON file,Writing data to storage
+Static File Serving,100,@app.route('/'),DEFINE root route,Maps root URL,Setting homepage route
+Static File Serving,101,def serve_frontend():,DEFINE serve_frontend,Serves main HTML page,Delivering dashboard
+Static File Serving,102,"send_from_directory('.', 'index.html')",SEND index.html,Serves frontend HTML,Sending dashboard page
+Static File Serving,105,@app.route('/style.css'),DEFINE CSS route,Maps CSS URL,Setting stylesheet route
+Static File Serving,107,"send_from_directory('.', 'style.css')",SEND style.css,Serves CSS file,Sending design blueprint
+API Endpoints,110,@app.route('/api/health'),DEFINE health endpoint,Creates health route,Server status check
+API Endpoints,119,@app.route('/api/accounts'),DEFINE accounts endpoint,Gets all accounts,Account list service
+API Endpoints,130,@app.route('/api/accounts/<id>'),DEFINE account detail endpoint,Gets account details,Account finder
+API Endpoints,146,@app.route('/api/transactions'),DEFINE transactions endpoint,Gets transactions,Transaction list
+API Endpoints,192,"@app.route('/api/transactions', POST)",DEFINE add transaction,Adds new transaction,Transaction recorder
+API Endpoints,240,@app.route('/api/cards'),DEFINE cards endpoint,Gets cards,Card list
+API Endpoints,249,@app.route('/api/summary'),DEFINE summary endpoint,Gets financial summary,Dashboard overview
+API Endpoints,276,@app.route('/api/transfer'),DEFINE transfer endpoint,Transfers funds,Move money service
+Server Startup,349,if __name__ == '__main__':,CHECK main script,Runs if main,Startup check
+Server Startup,350,init_database(),CALL init_database,Initializes data file,Prepare initial data
+Server Startup,354,"app.run(debug=True, port=5000)",START Flask server,Runs development server,Launch banking API
